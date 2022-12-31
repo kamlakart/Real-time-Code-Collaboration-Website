@@ -1,0 +1,92 @@
+.loginContainer {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(55, 65, 67);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginBox {
+    height: 30rem;
+    width: 25rem;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+.loginBox-inputs {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    /* margin: 10px; */
+}
+
+.loginBox-inputs input {
+    margin: 5px;
+    width: 20rem;
+    padding: 1px;
+    font-size: 0.9rem;
+    padding-left: 5px;
+    height: 1.8rem;
+    font-weight: bold;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    background-color: rgb(216, 233, 248);
+}
+
+.join-btn {
+    width: 60px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: orange;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight:600;
+    margin-top: 5px;
+}
+
+.logo-container {
+    margin-bottom: 10px;
+}
+
+.logo-container img {
+    width: 30px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.join-room-txt {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color:rgb(99, 125, 130)
+}
+
+.create-room-txt a{
+    text-decoration: none;
+    color: orange;
+    border-bottom: 1px solid orange;
+}
+
+.create-room-txt {
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+.join-btn:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.create-room-txt a:hover {
+    color: orangered;
+    border-bottom: none;
+}

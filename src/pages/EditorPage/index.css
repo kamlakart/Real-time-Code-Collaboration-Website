@@ -1,0 +1,97 @@
+.editorPage {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.leftside {
+    height: 100vh;
+    width: 12rem;
+    background-color: rgb(52, 52, 52);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* align-items: center; */
+}
+
+.logowrapper {
+    border-bottom: 1px solid white;
+    height: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: rgb(214, 226, 141);
+    font-size: 0.7rem;
+}
+
+.logowrapper img {
+    width: 32px;
+    margin-right: 5px;
+    border-radius: 5px;
+}
+
+
+.rightside {
+    height: 100vh;
+    flex: 1;
+    background-color: rgb(41, 41, 46);
+}
+
+.leftside-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    /* align-items: center; */
+}
+
+.leftside-inner h3 {
+    margin-top: 6px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: white;
+}
+
+.userphoto {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    color: white;
+    font-size: 0.8rem;
+    justify-items: center;
+    width: 100%;
+}
+
+.bottom-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cprid, .leave-roombtn {
+    width: 90%;
+    height: 2rem;
+    border-radius: 5px;
+    margin: 5px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cprid {
+    background-color: white;
+}
+
+.leave-roombtn {
+    background-color: rgb(214, 226, 141);
+}
+
+.cprid:hover, .leave-roombtn:hover {
+    background-color: aquamarine;
+}

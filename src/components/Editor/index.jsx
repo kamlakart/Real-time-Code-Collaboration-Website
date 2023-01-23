@@ -10,7 +10,7 @@ import ACTIONS from '../../Actions';
 
 const extensions = [cpp()];
 
-export default function Editor({socket, roomId}) {
+export default function Editor({socket, roomId, onCodeChange}) {
   const editor = useRef();
   const [code, setCode] = useState('');
   const { setContainer } = useCodeMirror({
@@ -22,6 +22,7 @@ export default function Editor({socket, roomId}) {
     width: '75vw',
     onChange: ((code, codeUpdates)=> {
       setCode(code);
+      onCodeChange(code);
       if(codeUpdates.selectionSet)
       {
         socket.emit(ACTIONS.CODE_CHANGE, {code, roomId});

@@ -7,9 +7,11 @@ import toast from 'react-hot-toast';
 import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import Editor from '../../components/Editor';
 import ACTIONS from '../../Actions';
-const socket = io('ws://localhost:5000');
+import { useRef } from 'react';
+const socket = io(`${process.env.REACT_APP_BACKEND_URL}`);
 const EditorPage = () => {
   const location = useLocation();
+  const codeRef = useRef(null);
   const { roomId } = useParams();
   const reactNavigator = useNavigate();
   const [user, setUser] = useState([]);
@@ -27,9 +29,10 @@ const EditorPage = () => {
           username: location.state?.username,
         })
         socket.on(ACTIONS.JOINED, ({clients, username, socketId}) =>{
-          if(username!==location.state?.username)
+          if(socket.id!==socketId)
           {
             toast.success(`${username} joined the Room.`);
+            socket.emit(ACTIONS.SYNC_CODE, {code: codeRef.current, socketId});
           }
           setUser(clients);
         })
@@ -46,7 +49,6 @@ const EditorPage = () => {
         socket.off('connect_failed');
         socket.off(ACTIONS.JOINED);
         socket.off(ACTIONS.DISCONNECTED);
-        // socket.disconnect();
       }
   }, [])
 
@@ -87,7 +89,9 @@ const EditorPage = () => {
           </div>
         </div>
         <div className="rightside">
-                <Editor socket={socket} roomId={roomId} />
+                <Editor socket={socket} roomId={roomId} onCodeChange={(code)=> {
+                  codeRef.current = code;
+                }} />
         </div>
       </div>
     </div>

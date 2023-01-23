@@ -3,12 +3,17 @@ const http = require('http');
 const {Server} = require('socket.io');
 const cors = require('cors');
 const app = express();
+const path = require('path')
 app.use(cors());
+app.use(express.static('build'));
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+})
 const server = http.createServer(app);
 const ACTIONS = require('./src/Actions');
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: `http://localhost:3000`,
         methods: ['GET', 'POST'],
     }
 })
@@ -45,6 +50,9 @@ io.on('connection', (socket)=>{
     });
     socket.on(ACTIONS.CODE_CHANGE, ({code, roomId}) => {
         socket.in(roomId).emit(ACTIONS.CODE_CHANGE, {code});
+    })
+    socket.on(ACTIONS.SYNC_CODE, ({code, socketId}) => {
+        io.to(socketId).emit(ACTIONS.CODE_CHANGE, {code});
     })
     socket.on('disconnecting', () => {
         const room = [...socket.rooms];

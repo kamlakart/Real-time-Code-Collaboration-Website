@@ -1,21 +1,45 @@
-import React from 'react';
-import CodeMirror from '@uiw/react-codemirror';
+import { useEffect, useMemo, useRef } from 'react';
+import { useCodeMirror } from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-import {darcula} from '@uiw/codemirror-theme-darcula';
-import {okaidia} from '@uiw/codemirror-theme-okaidia';
+import { cpp } from '@codemirror/lang-cpp';
+import {githubLight, githubDark} from '@uiw/codemirror-theme-github'
+import { bbedit } from '@uiw/codemirror-theme-bbedit';
 import './index.css'
+import { useState } from 'react';
+import ACTIONS from '../../Actions';
 
-function Editor() {
-  return (
-    <div className="codeArea">
-      <CodeMirror
-        value="console.log('hello world!');"
-        height="100vh"
-        // theme={okaidia}
-        extensions={[javascript({ jsx: true })]}
-        // onChange={onChange}
-      />
-    </div>
-  );
+const extensions = [cpp()];
+
+export default function Editor({socket, roomId}) {
+  const editor = useRef();
+  const [code, setCode] = useState('');
+  const { setContainer } = useCodeMirror({
+    container: editor.current,
+    extensions,
+    value: code,
+    theme: bbedit,
+    height: '100vh',
+    width: '75vw',
+    onChange: ((code, codeUpdates)=> {
+      setCode(code);
+      if(codeUpdates.selectionSet)
+      {
+        socket.emit(ACTIONS.CODE_CHANGE, {code, roomId});
+      }
+    }),
+  });
+
+  useEffect(() => {
+    if (editor.current) {
+      socket.on(ACTIONS.CODE_CHANGE, ({code})=> {
+        setCode(code);
+      })
+      setContainer(editor.current);
+    }
+    return ()=> {
+      socket.off(ACTIONS.CODE_CHANGE);
+    }
+  }, [editor.current]);
+
+  return <div className='codeArea' ref={editor} />;
 }
-export default Editor;

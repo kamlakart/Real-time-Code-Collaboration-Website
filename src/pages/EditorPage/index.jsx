@@ -1,41 +1,66 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './index.css'
 import Logo from '../../components/Logo'
 import UserCard from '../../components/UserCard';
+import {io} from 'socket.io-client';
 import toast from 'react-hot-toast';
-import {useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import Editor from '../../components/Editor';
-import { initSocket } from '../../Backend/socket';
-import ACTIONS from '../../Backend/actions';
-import { useLocation } from 'react-router-dom';
-
-
+import ACTIONS from '../../Actions';
+const socket = io('ws://localhost:5000');
 const EditorPage = () => {
-  const socketRef = useRef(null);
   const location = useLocation();
-  useEffect(()=> {
-    const init = async ()=> {
-      socketRef.current = await initSocket();
-      // socketRef.current.emit(ACTIONS.JOIN, {
-      //   roomId,
-      //   username: location.state?.username,
-      // });
-    }
-    init();
+  const { roomId } = useParams();
+  const reactNavigator = useNavigate();
+  const [user, setUser] = useState([]);
+  useEffect(() => {
+      const init = () => {
+        socket.on('connect_error', (err) => handleErrors(err));
+        socket.on('connect_failed', (err) => handleErrors(err));
+        function handleErrors(e) {
+          console.log('socket error ', e);
+          toast.error('Socket connection failed, try again later.');
+          reactNavigator('/');
+        }
+        socket.emit(ACTIONS.JOIN, {
+          roomId,
+          username: location.state?.username,
+        })
+        socket.on(ACTIONS.JOINED, ({clients, username, socketId}) =>{
+          if(username!==location.state?.username)
+          {
+            toast.success(`${username} joined the Room.`);
+          }
+          setUser(clients);
+        })
+        socket.on(ACTIONS.DISCONNECTED, ({socketId, username}) => {
+          toast.success(`${username} left the Room.`);
+          setUser((prev) => {
+            return prev.filter((user) => user.socketId!==socketId);
+          });
+        })
+      };
+      init();
+      return () => {
+        socket.off('connect_error');
+        socket.off('connect_failed');
+        socket.off(ACTIONS.JOINED);
+        socket.off(ACTIONS.DISCONNECTED);
+        // socket.disconnect();
+      }
   }, [])
-  const [user, setUser] = useState([
-    { socketId: 1, username: 'Kamlakar T' },
-    { socketId: 2, username: 'Suryansh shukla' },
-    { socketId: 3, username: 'Ramesh B' },
-    { socketId: 4, username: 'Aman K' },
-  ]);
-  const navigate= useNavigate();
+
   const handleCopyRoom = () => {
+    navigator.clipboard.writeText(roomId);
     toast.success('Room ID Copied');
   }
   const handleLeaveRoom = () => {
-    toast.success('Left Room');
-    navigate('/');
+    socket.disconnect();
+    reactNavigator('/');
+  }
+  if(!location.state)
+  {
+    return <Navigate to='/' />;
   }
   return (
     <div>
@@ -62,7 +87,7 @@ const EditorPage = () => {
           </div>
         </div>
         <div className="rightside">
-                <Editor />
+                <Editor socket={socket} roomId={roomId} />
         </div>
       </div>
     </div>
